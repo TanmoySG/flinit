@@ -14,6 +14,9 @@ def createProjectDirectory(workingDirectory, projectName):
     return destination
 
 
+def createVirtualEnvironment():
+    pass
+
 
 def createREADME(location, projectName):
     Path(location+"README.md").touch()
