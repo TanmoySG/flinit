@@ -3,6 +3,14 @@ import os
 import sys
 import subprocess
 from pathlib import Path
+import shutil
+
+APPpy_CALLER = {
+    "flask": "app = flask.Flask(__name__)",
+    "cors": "flask_cors.CORS(app)"
+}
+
+APPpy_TEMPLATE = '''\n@app.route("/") \ndef hello_world(): \n\treturn "<p>Hello, World!</p>"'''
 
 
 def systemSpecificPath(workingPath):
@@ -10,6 +18,36 @@ def systemSpecificPath(workingPath):
         return workingPath.replace("/", "\\")
     elif sys.platform in ["linux",  "darwin"]:
         return workingPath.replace("\\", "/")
+
+
+def createAPPpy(workingDirectory):
+    Path(workingDirectory+"/app.py").touch()
+    print(u'\u2714', "Created app.py!")
+
+
+def importModuleToAPPpy(workingDirectory, package):
+    with open(workingDirectory+"/app.py", "a+") as app:
+        app.write("import "+package+"\n")
+
+
+def addModuleCallerToAPPpy(workingDirectory, caller):
+    with open(workingDirectory+"/app.py", "a+") as app:
+        app.write(caller+"\n")
+
+
+def writeTEMPLATEtoAPPpy(workingDirectory):
+    with open(workingDirectory+"/app.py", "a+") as app:
+        app.write(APPpy_TEMPLATE)
+
+
+def generateRequirementTXT(workingDirectory):
+    if sys.platform in ["cygwin", "win32"]:
+        os.system('. {0} && pip freeze > {1}/requirement.txt'.format(systemSpecificPath(
+            workingDirectory+"\\virtualenv\\Scripts\\activate"), systemSpecificPath(workingDirectory)))
+    elif sys.platform in ["linux",  "darwin"]:
+        os.system('. {0} && pip freeze > {1}/requirement.txt'.format(systemSpecificPath(
+            workingDirectory+"virtualenv/bin/activate"), systemSpecificPath(workingDirectory)))
+    print(u'\u2714', "Requirement.txt Generated!")
 
 
 def installFlask(workingDirectory):
@@ -24,12 +62,12 @@ def installFlask(workingDirectory):
 
 def installCORS(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('. {0} && pip install -U flask-cors'.format(systemSpecificPath(
+        os.system('. {0} && pip -q install -U -q flask-cors'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate")))
     elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && pip install -U flask-cors'.format(
+        os.system('. {0} && pip -q install -U -q flask-cors'.format(
             systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
-    print(u'\u2714', "Flask Installed!")
+    print(u'\u2714', "Cors Installed!")
 
 
 def createProjectDirectory(workingDirectory, projectName):
@@ -47,7 +85,7 @@ def createVirtualEnvironment(workingDirectory):
         try:
             subprocess.run(
                 ["python", "-m", "venv", systemSpecificPath(workingDirectory)+"virtualenv"])
-            print(u'\u2714', "Virtual Environment Created!")            
+            print(u'\u2714', "Virtual Environment Created!")
         except subprocess.CalledProcessError as e:
             print(
                 "There was an error creating virtual environment. Check the error in errors.txt")
@@ -57,7 +95,7 @@ def createVirtualEnvironment(workingDirectory):
             sys.exit()
         installFlask(workingDirectory)
     else:
-        print(u'\u2718', "Sysytem not supported. Flinit Initialize Project Failed")
+        print(u'\u2718', "System not supported. Flinit Initialize Project Failed")
         sys.exit()
 
 
@@ -68,8 +106,35 @@ def createREADME(location, projectName):
     print(u'\u2714', "README.md Created!")
 
 
-def dontCreateREADME(location, projectName):
-    print(u'\u2718', "README.md not Created!")
+def addGIT(workingDirectory):
+    if shutil.which("git") != None:
+        os.system("cd {0} && git init -q && git add . && git commit -m 'Initial Commit' -q".format(
+            systemSpecificPath(workingDirectory)))
+        print(u'\u2714', "Git Setup Complete.")
+        print(u'\u2714', "Code Initialized and Committed.")
+    else:
+        print(u'\u2718', "Git not Installed. Skipped setting up Git.")
+
+
+def runner(location, projectName, iCors=False, iREADME=False, iGit=False):
+    workingDirectory = createProjectDirectory(location, projectName)
+    createVirtualEnvironment(workingDirectory)
+    createAPPpy(workingDirectory)
+    installFlask(workingDirectory)
+    importModuleToAPPpy(workingDirectory, "flask")
+    if iCors:
+        installCORS(workingDirectory)
+        importModuleToAPPpy(workingDirectory, "flask_cors")
+    addModuleCallerToAPPpy(workingDirectory, APPpy_CALLER["flask"])
+    if iCors:
+        addModuleCallerToAPPpy(workingDirectory, APPpy_CALLER["cors"])
+    writeTEMPLATEtoAPPpy(workingDirectory)
+    generateRequirementTXT(workingDirectory)
+    if iREADME:
+        createREADME(workingDirectory, projectName)
+    if iGit:
+        addGIT(workingDirectory)
+    print(u'\u2714', "flinit Complete!")
 
 
 if __name__ == "__main__":
@@ -81,21 +146,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "location", type=str, help="The Location where the Project is to be created")
 
-    parser.add_argument("--git", "-gt", "-g", dest="shouldREADMEbeCreated", action="store_const",
-                        const=createREADME, default=dontCreateREADME, help="The Location where the Project is to be created")
+    parser.add_argument("--git", "-gt", "-g", dest="needGIT", action="store_true",
+                        help="Initialize Git for the Project. Works only if Git is installed.")
 
-    parser.add_argument("--cors", "-cr", "-c", dest="shouldREADMEbeCreated", action="store_const",
-                        const=createREADME, default=dontCreateREADME, help="The Location where the Project is to be created")
+    parser.add_argument("--cors", "-cr", "-c", dest="needCORS", action="store_true",
+                        help="Add Cross-origin resource sharing (CORS) to Flask App.")
 
-    parser.add_argument("--readme", "-rd", "-r", dest="shouldREADMEbeCreated", action="store_const",
-                        const=createREADME, default=dontCreateREADME, help="The Location where the Project is to be created")
+    parser.add_argument("--readme", "-rd", "-r", dest="needREADME",
+                        action="store_true", help="Add README.md for Project.")
+
+    parser.set_defaults(needGIT=False, needCORS=False, needREADME=False)
 
     args = parser.parse_args()
 
-    workingDirectory = createProjectDirectory(args.location, args.projectName)
-
-    args.shouldREADMEbeCreated(workingDirectory, args.projectName)
-
-    createVirtualEnvironment(workingDirectory)
-    
-    print(u'\u2714', "flinit Complete!")
+    runner(location=args.location, projectName=args.projectName,
+           iCors=args.needCORS, iREADME=args.needREADME, iGit=args.needGIT)

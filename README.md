@@ -1,6 +1,18 @@
 # flinit
 A Python Command-Line Tool to Initialize a Python-Flask App with Template Code. A create-react-app like tool for Flask Projects.
 
+Template for </kbd>app.py</kbd>
+```
+import flask
+import flask_cors
+
+app = flask.Flask(__name__)
+flask_cors.CORS(app)
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+```
 
 [//]: https://stackabuse.com/executing-shell-commands-with-python/
 
