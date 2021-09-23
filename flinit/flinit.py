@@ -42,10 +42,10 @@ def writeTEMPLATEtoAPPpy(workingDirectory):
 
 def generateRequirementTXT(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('. {0} && pip freeze > {1}/requirement.txt'.format(systemSpecificPath(
+        os.system('. {0} && pip freeze > {1}/requirements.txt'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate"), systemSpecificPath(workingDirectory)))
     elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && pip freeze > {1}/requirement.txt'.format(systemSpecificPath(
+        os.system('. {0} && pip freeze > {1}/requirements.txt'.format(systemSpecificPath(
             workingDirectory+"virtualenv/bin/activate"), systemSpecificPath(workingDirectory)))
     print(u'\u2714', "Requirement.txt Generated!")
 
@@ -108,7 +108,7 @@ def createREADME(location, projectName):
 
 def generateGITignore(workingDirectory):
     Path(workingDirectory+".gitignore").touch()
-    shutil.copyfile("./gitignore-template.txt", workingDirectory+"/.gitignore")
+    shutil.copyfile("./gitignore-template.txt", workingDirectory+"/tree.gitignore")
     '''with open(workingDirectory+".gitignore", "a+") as readme:
         readme.write(open("./gitignore-template.txt", "r").read())'''
     print(u'\u2714', ".gitignore Generated!")

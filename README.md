@@ -25,3 +25,7 @@ def hello_world():
 [//]: https://code-maven.com/slides/python/argparse-named
 
 [//]: https://stackoverflow.com/questions/53151899/python-how-to-script-virtual-environment-building-and-activation
+
+[//]: https://codeburst.io/building-beautiful-command-line-interfaces-with-python-26c7e1bb54df
+
+[//]: https://www.geeksforgeeks.org/command-line-scripts-python-packaging/
