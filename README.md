@@ -9,3 +9,7 @@ A Python Command-Line Tool to Initialize a Python-Flask App with Template Code. 
 [//]: https://youtu.be/BKvj4FH67H8?t=1296
 
 [//]: https://dev.to/divshekhar/python-subprocess-execute-shell-commands-1bl2#:~:text=The%20subprocess.,object%20of%20CompletedProcess%20in%20Python.
+
+[//]: https://code-maven.com/slides/python/argparse-named
+
+[//]: https://stackoverflow.com/questions/53151899/python-how-to-script-virtual-environment-building-and-activation
