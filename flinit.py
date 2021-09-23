@@ -106,8 +106,17 @@ def createREADME(location, projectName):
     print(u'\u2714', "README.md Created!")
 
 
+def generateGITignore(workingDirectory):
+    Path(workingDirectory+".gitignore").touch()
+    shutil.copyfile("./gitignore-template.txt", workingDirectory+"/.gitignore")
+    '''with open(workingDirectory+".gitignore", "a+") as readme:
+        readme.write(open("./gitignore-template.txt", "r").read())'''
+    print(u'\u2714', ".gitignore Generated!")
+
+
 def addGIT(workingDirectory):
     if shutil.which("git") != None:
+        generateGITignore(workingDirectory)
         os.system("cd {0} && git init -q && git add . && git commit -m 'Initial Commit' -q".format(
             systemSpecificPath(workingDirectory)))
         print(u'\u2714', "Git Setup Complete.")
