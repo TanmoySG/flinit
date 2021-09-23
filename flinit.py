@@ -14,10 +14,10 @@ def systemSpecificPath(workingPath):
 
 def installFlask(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('. {0} && pip install Flask'.format(systemSpecificPath(
+        os.system('. {0} && pip -q install -q Flask'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate")))
     elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && pip install Flask'.format(
+        os.system('. {0} && pip -q install -q Flask'.format(
             systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
     print(u'\u2714', "Flask Installed!")
 
@@ -37,6 +37,7 @@ def createVirtualEnvironment(workingDirectory):
         try:
             subprocess.run(
                 ["python", "-m", "venv", systemSpecificPath(workingDirectory)+"virtualenv"])
+            print(u'\u2714', "Virtual Environment Created!")            
         except subprocess.CalledProcessError as e:
             print(
                 "There was an error creating virtual environment. Check the error in errors.txt")
