@@ -22,6 +22,16 @@ def installFlask(workingDirectory):
     print(u'\u2714', "Flask Installed!")
 
 
+def installCORS(workingDirectory):
+    if sys.platform in ["cygwin", "win32"]:
+        os.system('. {0} && pip install -U flask-cors'.format(systemSpecificPath(
+            workingDirectory+"\\virtualenv\\Scripts\\activate")))
+    elif sys.platform in ["linux",  "darwin"]:
+        os.system('. {0} && pip install -U flask-cors'.format(
+            systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
+    print(u'\u2714', "Flask Installed!")
+
+
 def createProjectDirectory(workingDirectory, projectName):
     destination = workingDirectory+"/"+projectName+"/"
     if not os.path.isdir(destination):
@@ -83,6 +93,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     workingDirectory = createProjectDirectory(args.location, args.projectName)
+
     args.shouldREADMEbeCreated(workingDirectory, args.projectName)
+
     createVirtualEnvironment(workingDirectory)
+    
     print(u'\u2714', "flinit Complete!")
