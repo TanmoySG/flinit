@@ -12,7 +12,7 @@ long_description = 'A CLI Tools to setup a Flask App Efficiently without requiri
 
 setup(
     name='flinit',
-    version='0.1.0',
+    version='0.1.5',
     author='Tanmoy Sen Gupta',
     author_email='tanmoysps@gmail.com',
     url='https://github.com/TanmoySG/flinit',
