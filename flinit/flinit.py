@@ -163,7 +163,8 @@ def createVirtualEnvironment(workingDirectory):
         try:
             os.system("python -m venv " +
                       systemSpecificPath(workingDirectory+"virtualenv"))
-            print(emojize(":check_mark_button:"), "Virtual Environment Created!")
+            print(emojize(":check_mark_button:"),
+                  "Virtual Environment Created!")
         except subprocess.CalledProcessError as e:
             print(
                 "There was an error creating virtual environment. Check the error in errors.txt")
@@ -172,7 +173,8 @@ def createVirtualEnvironment(workingDirectory):
             print(emojize(":cross_mark:"), "Flinit Initialize Project Failed")
             sys.exit()
     else:
-        print(emojize(":cross_mark:"), "System not supported. Flinit Initialize Project Failed")
+        print(emojize(":cross_mark:"),
+              "System not supported. Flinit Initialize Project Failed")
         sys.exit()
 
 
@@ -196,9 +198,11 @@ def addGIT(workingDirectory):
         os.system("cd {0} && git init -q && git add . && git commit -q -m 'Initial Commit'".format(
             systemSpecificPath(workingDirectory)))
         print(emojize(":check_mark_button:"), "Git Setup Complete.")
-        print(emojize(":check_mark_button:"), "Code Initialized and Committed.")
+        print(emojize(":check_mark_button:"),
+              "Code Initialized and Committed.")
     else:
-        print(emojize(":cross_mark:"), "Git not Installed. Skipped setting up Git.")
+        print(emojize(":cross_mark:"),
+              "Git not Installed. Skipped setting up Git.")
 
 
 def runner(location, projectName, iCors=False, iREADME=False, iGit=False):
