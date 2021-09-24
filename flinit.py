@@ -4,6 +4,84 @@ import sys
 import subprocess
 from pathlib import Path
 import shutil
+from emoji import emojize
+
+
+gitIGNOREtemplate = '''
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+*.mo
+*.pot
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+instance/
+.webassets-cache
+.scrapy
+docs/_build/
+target/
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+.python-version
+__pypackages__/
+celerybeat-schedule
+celerybeat.pid
+*.sage.py
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.spyderproject
+.spyproject
+.ropeproject
+/site
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+'''
 
 APPpy_CALLER = {
     "flask": "app = flask.Flask(__name__)",
@@ -17,12 +95,12 @@ def systemSpecificPath(workingPath):
     if sys.platform in ["cygwin", "win32"]:
         return workingPath.replace("/", "\\")
     elif sys.platform in ["linux",  "darwin"]:
-        return workingPath.replace("\\", "/")
+        return workingPath.replace("\\", "/").replace("//", "/")
 
 
 def createAPPpy(workingDirectory):
     Path(workingDirectory+"/app.py").touch()
-    print(u'\u2714', "Created app.py!")
+    print(emojize(":check_mark_button:"), "Created app.py!")
 
 
 def importModuleToAPPpy(workingDirectory, package):
@@ -42,60 +120,61 @@ def writeTEMPLATEtoAPPpy(workingDirectory):
 
 def generateRequirementTXT(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('. {0} && pip freeze > {1}/requirement.txt'.format(systemSpecificPath(
+        os.system('{0} && pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate"), systemSpecificPath(workingDirectory)))
     elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && pip freeze > {1}/requirement.txt'.format(systemSpecificPath(
+        os.system('. {0} && pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
             workingDirectory+"virtualenv/bin/activate"), systemSpecificPath(workingDirectory)))
-    print(u'\u2714', "Requirement.txt Generated!")
+    print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
 
 
 def installFlask(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('. {0} && pip -q install -q Flask'.format(systemSpecificPath(
+        os.system('{0} && pip -q install -q Flask'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate")))
     elif sys.platform in ["linux",  "darwin"]:
         os.system('. {0} && pip -q install -q Flask'.format(
             systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
-    print(u'\u2714', "Flask Installed!")
+    print(emojize(":check_mark_button:"), "Installed Flask!")
 
 
 def installCORS(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('. {0} && pip -q install -U -q flask-cors'.format(systemSpecificPath(
+        os.system('{0} && pip -q install -U -q flask-cors'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate")))
     elif sys.platform in ["linux",  "darwin"]:
         os.system('. {0} && pip -q install -U -q flask-cors'.format(
             systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
-    print(u'\u2714', "Cors Installed!")
+    print(emojize(":check_mark_button:"), "Installed CORS!")
 
 
 def createProjectDirectory(workingDirectory, projectName):
-    destination = workingDirectory+"/"+projectName+"/"
+    destination = systemSpecificPath(workingDirectory+"/"+projectName+"/")
     if not os.path.isdir(destination):
-        subprocess.run(["mkdir", destination])
-        print(u'\u2714', "Working Directory Created!")
+        os.system("mkdir {0}".format(destination))
+        print(emojize(":check_mark_button:"), "Working Directory Created!")
     else:
-        print(u'\u2714', "Working Directory Exists!")
+        print(emojize(":check_mark_button:"), "Working Directory Exists!")
     return destination
 
 
 def createVirtualEnvironment(workingDirectory):
     if sys.platform != "aix":
         try:
-            subprocess.run(
-                ["python", "-m", "venv", systemSpecificPath(workingDirectory)+"virtualenv"])
-            print(u'\u2714', "Virtual Environment Created!")
+            os.system("python -m venv " +
+                      systemSpecificPath(workingDirectory+"virtualenv"))
+            print(emojize(":check_mark_button:"),
+                  "Virtual Environment Created!")
         except subprocess.CalledProcessError as e:
             print(
                 "There was an error creating virtual environment. Check the error in errors.txt")
             with open(workingDirectory+"/error.txt", "w+") as err:
                 err.write(e)
-            print(u'\u2718', "Flinit Initialize Project Failed")
+            print(emojize(":cross_mark:"), "Flinit Initialize Project Failed")
             sys.exit()
-        installFlask(workingDirectory)
     else:
-        print(u'\u2718', "System not supported. Flinit Initialize Project Failed")
+        print(emojize(":cross_mark:"),
+              "System not supported. Flinit Initialize Project Failed")
         sys.exit()
 
 
@@ -103,29 +182,32 @@ def createREADME(location, projectName):
     Path(location+"README.md").touch()
     with open(location+"README.md", "w+") as readme:
         readme.write("# {0} is a Python-Flask Project".format(projectName))
-    print(u'\u2714', "README.md Created!")
+    print(emojize(":check_mark_button:"), "README.md Created!")
 
 
 def generateGITignore(workingDirectory):
     Path(workingDirectory+".gitignore").touch()
-    shutil.copyfile("./gitignore-template.txt", workingDirectory+"/.gitignore")
-    '''with open(workingDirectory+".gitignore", "a+") as readme:
-        readme.write(open("./gitignore-template.txt", "r").read())'''
-    print(u'\u2714', ".gitignore Generated!")
+    with open(workingDirectory+".gitignore", "a+") as gitignore:
+        gitignore.write(gitIGNOREtemplate)
+    print(emojize(":check_mark_button:"), ".gitignore Generated!")
 
 
 def addGIT(workingDirectory):
     if shutil.which("git") != None:
         generateGITignore(workingDirectory)
-        os.system("cd {0} && git init -q && git add . && git commit -m 'Initial Commit' -q".format(
+        os.system("cd {0} && git init -q && git add . && git commit -q -m 'Initial'".format(
             systemSpecificPath(workingDirectory)))
-        print(u'\u2714', "Git Setup Complete.")
-        print(u'\u2714', "Code Initialized and Committed.")
+        print(emojize(":check_mark_button:"), "Git Setup Complete.")
+        print(emojize(":check_mark_button:"),
+              "Code Initialized and Committed.")
     else:
-        print(u'\u2718', "Git not Installed. Skipped setting up Git.")
+        print(emojize(":cross_mark:"),
+              "Git not Installed. Skipped setting up Git.")
 
 
 def runner(location, projectName, iCors=False, iREADME=False, iGit=False):
+    print(emojize(":star-struck:"),
+          "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
     workingDirectory = createProjectDirectory(location, projectName)
     createVirtualEnvironment(workingDirectory)
     createAPPpy(workingDirectory)
@@ -143,10 +225,11 @@ def runner(location, projectName, iCors=False, iREADME=False, iGit=False):
         createREADME(workingDirectory, projectName)
     if iGit:
         addGIT(workingDirectory)
-    print(u'\u2714', "flinit Complete!")
+    print(emojize(":clinking_beer_mugs:"),
+          "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("projectName", type=str,
