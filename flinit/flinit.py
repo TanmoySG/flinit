@@ -5,6 +5,83 @@ import subprocess
 from pathlib import Path
 import shutil
 
+
+gitIGNOREtemplate = '''
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+*.mo
+*.pot
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+instance/
+.webassets-cache
+.scrapy
+docs/_build/
+target/
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+.python-version
+__pypackages__/
+celerybeat-schedule
+celerybeat.pid
+*.sage.py
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.spyderproject
+.spyproject
+.ropeproject
+/site
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+'''
+
 APPpy_CALLER = {
     "flask": "app = flask.Flask(__name__)",
     "cors": "flask_cors.CORS(app)"
@@ -17,7 +94,24 @@ def systemSpecificPath(workingPath):
     if sys.platform in ["cygwin", "win32"]:
         return workingPath.replace("/", "\\")
     elif sys.platform in ["linux",  "darwin"]:
-        return workingPath.replace("\\", "/")
+        return workingPath.replace("\\", "/").replace("//", "/")
+
+
+def showInstructions(workingDirectory):
+    print("".join(["-"]*65))
+    print("Flinit has succesfully created your Python-Flask Project!")
+    print("")
+    print("To start the Virtual Environment:")
+    if sys.platform in ["cygwin", "win32"]:
+        print("\033[94m"+systemSpecificPath(workingDirectory +
+              "\\virtualenv\\Scripts\\activate\033[0m"))
+    elif sys.platform in ["linux",  "darwin"]:
+        print('\033[94m. '+systemSpecificPath(workingDirectory +
+              "virtualenv/bin/activate\033[0m"))
+    print("")
+    print("To start the Flask Server:")
+    print("\033[94mflask run\033[0m")
+    print("".join(["-"]*65))
 
 
 def createAPPpy(workingDirectory):
@@ -57,7 +151,7 @@ def installFlask(workingDirectory):
     elif sys.platform in ["linux",  "darwin"]:
         os.system('. {0} && pip -q install -q Flask'.format(
             systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
-    print(u'\u2714', "Flask Installed!")
+    print(u'\u2714', "Installed Flask!")
 
 
 def installCORS(workingDirectory):
@@ -67,7 +161,7 @@ def installCORS(workingDirectory):
     elif sys.platform in ["linux",  "darwin"]:
         os.system('. {0} && pip -q install -U -q flask-cors'.format(
             systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
-    print(u'\u2714', "Cors Installed!")
+    print(u'\u2714', "Installed CORS!")
 
 
 def createProjectDirectory(workingDirectory, projectName):
@@ -93,7 +187,6 @@ def createVirtualEnvironment(workingDirectory):
                 err.write(e)
             print(u'\u2718', "Flinit Initialize Project Failed")
             sys.exit()
-        installFlask(workingDirectory)
     else:
         print(u'\u2718', "System not supported. Flinit Initialize Project Failed")
         sys.exit()
@@ -108,9 +201,8 @@ def createREADME(location, projectName):
 
 def generateGITignore(workingDirectory):
     Path(workingDirectory+".gitignore").touch()
-    shutil.copyfile("./gitignore-template.txt", workingDirectory+"/tree.gitignore")
-    '''with open(workingDirectory+".gitignore", "a+") as readme:
-        readme.write(open("./gitignore-template.txt", "r").read())'''
+    with open(workingDirectory+".gitignore", "a+") as gitignore:
+        gitignore.write(gitIGNOREtemplate)
     print(u'\u2714', ".gitignore Generated!")
 
 
@@ -143,10 +235,11 @@ def runner(location, projectName, iCors=False, iREADME=False, iGit=False):
         createREADME(workingDirectory, projectName)
     if iGit:
         addGIT(workingDirectory)
-    print(u'\u2714', "flinit Complete!")
+    showInstructions(workingDirectory)
+    print(u'\033[93m\u2714\033[0m', "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("projectName", type=str,
