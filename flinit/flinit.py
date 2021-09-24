@@ -120,17 +120,17 @@ def writeTEMPLATEtoAPPpy(workingDirectory):
 
 def generateRequirementTXT(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('{0} && python3 -m pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
+        os.system('{0} && pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate"), systemSpecificPath(workingDirectory)))
     elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && python3 -m pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
+        os.system('. {0} && pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
             workingDirectory+"virtualenv/bin/activate"), systemSpecificPath(workingDirectory)))
     print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
 
 
 def installFlask(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('{0} && python3 -m pip -q install -q Flask'.format(systemSpecificPath(
+        os.system('{0} && pip -q install -q Flask'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate")))
     elif sys.platform in ["linux",  "darwin"]:
         os.system('. {0} && pip -q install -q Flask'.format(
@@ -140,10 +140,10 @@ def installFlask(workingDirectory):
 
 def installCORS(workingDirectory):
     if sys.platform in ["cygwin", "win32"]:
-        os.system('{0} && python3 -m pip -q install -U -q flask-cors'.format(systemSpecificPath(
+        os.system('{0} && pip -q install -U -q flask-cors'.format(systemSpecificPath(
             workingDirectory+"\\virtualenv\\Scripts\\activate")))
     elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && python3 -m pip -q install -U -q flask-cors'.format(
+        os.system('. {0} && pip -q install -U -q flask-cors'.format(
             systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
     print(emojize(":check_mark_button:"), "Installed CORS!")
 
@@ -195,7 +195,7 @@ def generateGITignore(workingDirectory):
 def addGIT(workingDirectory):
     if shutil.which("git") != None:
         generateGITignore(workingDirectory)
-        os.system("cd {0} && git init -q && git add . && git commit -q -m 'Initial Commit'".format(
+        os.system("cd {0} && git init -q && git add . && git commit -q -m 'Initial'".format(
             systemSpecificPath(workingDirectory)))
         print(emojize(":check_mark_button:"), "Git Setup Complete.")
         print(emojize(":check_mark_button:"),
