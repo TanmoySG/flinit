@@ -8,11 +8,12 @@ def getRequirements():
     return requirements
 
 
-long_description = 'A CLI Tools to setup a Flask App Efficiently without requiring multi-step setup.'
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 setup(
     name='flinit',
-    version='0.1.6',
+    version='0.1.7',
     author='Tanmoy Sen Gupta',
     author_email='tanmoysps@gmail.com',
     url='https://github.com/TanmoySG/flinit',
