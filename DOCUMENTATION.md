@@ -76,4 +76,3 @@ Setting Up Git and README for the project (Optional)
 ```
 
 This sets-up a end to end flask app on Linux/UNIX.
-
