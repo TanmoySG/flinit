@@ -1,5 +1,4 @@
-# Initializing a Flask Project on windows - without <kbd>flinit</kbd>
-
+# Initializing a Flask Project on windows - without flinit
 Creating a Project Working Directory
 ```
 > mkdir sampleFlaskProject
@@ -38,7 +37,7 @@ Setting Up Git and README for the project (Optional)
 
 This sets-up a end to end flask app.
 
-# Initializing a Flask Project on Linux/macOS(Unix) - without <kbd>flinit</kbd>
+# Initializing a Flask Project on Linux/macOS(Unix) - without flinit
 
 Creating a Project Working Directory
 ```
