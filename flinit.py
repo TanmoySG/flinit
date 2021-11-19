@@ -253,3 +253,7 @@ def main():
 
     runner(location=args.location, projectName=args.projectName,
            iCors=args.needCORS, iREADME=args.needREADME, iGit=args.needGIT)
+
+
+if __name__ == "__main__":
+    main()
