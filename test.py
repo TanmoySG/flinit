@@ -52,9 +52,25 @@ class linuxUNIXRunner:
         self.workingDirectory = workingDirectory
 
     def generateRequirementTXT(self):
-        os.system('. {0} && {1} -q freeze > {2}/requirements.txt  -q'.format(systemSpecificPath(
-            self.workingDirectory+"virtualenv/bin/activate"), self.pipCommand, systemSpecificPath(self.workingDirectory)))
+        os.system('. {0} && {1} -q freeze > {2}/requirements.txt  -q'.format(
+                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
+                self.pipCommand, systemSpecificPath(self.workingDirectory)
+            )
+        )
         print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
+
+    def installFlask(self):
+        os.system('. {0} && {1} -q install -q Flask'.format(
+                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
+                self.pipCommand
+            )
+        )
+        print(emojize(":check_mark_button:"), "Installed Flask!")
+
+    def installCORS(workingDirectory):
+        os.system('. {0} && pip -q install -U -q flask-cors'.format(
+            systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
+        print(emojize(":check_mark_button:"), "Installed CORS!")
 
 
 newOnj = linuxUNIXRunner("python", "pip")
