@@ -1,45 +1,61 @@
-import os
 import argparse
+import os
+import sys
 import subprocess
+from pathlib import Path
+import shutil
+from emoji import emojize
 
 
+gitIGNOREtemplate = '''
 '''
-cowsay = Popen('cowsay', stdin=PIPE)
-ls = Popen('ls', stdout=cowsay.stdin)
-cowsay.communicate()
-ls.wait()
-'''
+
+APPpy_CALLER = {
+    "flask": "app = flask.Flask(__name__)",
+    "cors": "flask_cors.CORS(app)"
+}
+
+APPpy_TEMPLATE = '''\n@app.route("/") \ndef hello_world(): \n\treturn "<p>Hello, World!</p>"'''
 
 
-def systemSpecificPath():
-    subprocess.Popen(
-        ["python", "-m", "venv", "./test-test/virtualenv"], stdin=subprocess.PIPE)
-    subprocess.run([".", "./test-test/virtualenv/bin/activate"], shell=True)
-    subprocess.run(["pip", "install", "Flask"])
+def systemSpecificPath(workingPath):
+    if sys.platform in ["cygwin", "win32"]:
+        return workingPath.replace("/", "\\")
+    elif sys.platform in ["linux",  "darwin"]:
+        return workingPath.replace("\\", "/").replace("//", "/")
 
 
-# Thsi Surprizingly works
-
-def fucfunction():
-    os.system(
-        'python -m venv test-test/virtualenv && . test-test/virtualenv/bin/activate && pip install Flask')
+def createAPPpy(workingDirectory):
+    Path(workingDirectory+"/app.py").touch()
+    print(emojize(":check_mark_button:"), "Created app.py!")
 
 
-parser = argparse.ArgumentParser()
-'''
-parser.add_argument("projectName", type=str,
-                    help="Name of the Project")
-
-parser.add_argument(
-    "location", type=str, help="The Location where the Project is to be created")'''
+def importModuleToAPPpy(workingDirectory, package):
+    with open(workingDirectory+"/app.py", "a+") as app:
+        app.write("import "+package+"\n")
 
 
-parser.add_argument('--testval1', dest='feature1', action='store_true')
-parser.add_argument('--testval2', dest='feature2', action='store_true')
+def addModuleCallerToAPPpy(workingDirectory, caller):
+    with open(workingDirectory+"/app.py", "a+") as app:
+        app.write(caller+"\n")
 
-parser.set_defaults(feature1=False, feature2=False)
+
+def writeTEMPLATEtoAPPpy(workingDirectory):
+    with open(workingDirectory+"/app.py", "a+") as app:
+        app.write(APPpy_TEMPLATE)
 
 
-args = parser.parse_args()
+class linuxUNIXRunner:
+    def __init__(self, pythonCMD, pipCMD, workingDirectory) -> None:
+        self.pythonCommand = pythonCMD
+        self.pipCommand = pipCMD
+        self.workingDirectory = workingDirectory
 
-print(args.feature1, args.feature2)
+    def generateRequirementTXT(self):
+        os.system('. {0} && {1} -q freeze > {2}/requirements.txt  -q'.format(systemSpecificPath(
+            self.workingDirectory+"virtualenv/bin/activate"), self.pipCommand, systemSpecificPath(self.workingDirectory)))
+        print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
+
+
+newOnj = linuxUNIXRunner("python", "pip")
+newOnj.printConfigs()
