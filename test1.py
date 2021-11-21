@@ -1,3 +1,2 @@
 import os
-
-print(os.popen(".venv/bin/activate").read())
+print(os.system("something >/dev/null 2>&1"))
