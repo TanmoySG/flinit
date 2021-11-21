@@ -91,25 +91,28 @@ APPpy_CALLER = {
 APPpy_TEMPLATE = '''\n\n@app.route("/") \ndef hello_world(): \n\treturn "<p>Hello, World!</p>"'''
 
 # Convert Path to Work with present working system
+
+
 def systemSpecificPath(workingPath):
     if sys.platform in ["cygwin", "win32"]:
         return workingPath.replace("/", "\\")
     elif sys.platform in ["linux",  "darwin"]:
         return workingPath.replace("\\", "/").replace("//", "/")
 
+
 def getPyPreRequisites():
     pyPath = sys.executable
     pipPath = ""
 
-    if shutil.which("pip") != None :
+    if shutil.which("pip") != None:
         pipPath = "pip"
-    elif os.popen("python -m pip --version").read() !=None:
+    elif os.popen("python -m pip --version").read() != None:
         pipPath = pyPath+" -m pip"
     else:
         os.popen(pyPath+" -m ensurepip --upgrade")
-        if shutil.which("pip") != None :
+        if shutil.which("pip") != None:
             pipPath = "pip"
-        elif os.popen("python -m pip --version").read() !=None:
+        elif os.popen("python -m pip --version").read() != None:
             pipPath = pyPath+" -m pip"
 
     return pyPath, pipPath
@@ -174,46 +177,51 @@ def addGIT(workingDirectory):
 
 class linuxUNIXRunner:
     def __init__(self, location, projectName, iCors=False, iREADME=False, iGit=False) -> None:
-        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
-        self.pythonCommand , self.pipCommand = getPyPreRequisites()
+        print(emojize(":star-struck:"),
+              "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
+        self.pythonCommand, self.pipCommand = getPyPreRequisites()
         self.projectName = projectName
         self.location = location
         self.iCors = iCors
         self.iREADME = iREADME
         self.iGit = iGit
-        self.workingDirectory = createProjectDirectory(self.location, self.projectName)
+        self.workingDirectory = createProjectDirectory(
+            self.location, self.projectName)
 
     def createVirtualEnvironment(self):
         os.system('cd {0} && {1} -m venv {2}'.format(
-                systemSpecificPath(self.workingDirectory),
-                self.pythonCommand,
-                systemSpecificPath("virtualenv")
-            )
+            systemSpecificPath(self.workingDirectory),
+            self.pythonCommand,
+            systemSpecificPath("virtualenv")
+        )
         )
         print(emojize(":check_mark_button:"), "Virtual Environment Created!")
 
     def generateRequirementTXT(self):
         os.system('. {0} && {1} -q freeze > {2}/requirements.txt  -q'.format(
-                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
-                self.pipCommand, 
-                systemSpecificPath(self.workingDirectory)
-            )
+            systemSpecificPath(self.workingDirectory +
+                               "virtualenv/bin/activate"),
+            self.pipCommand,
+            systemSpecificPath(self.workingDirectory)
+        )
         )
         print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
 
     def installFlask(self):
         os.system('. {0} && {1} -q install -q Flask'.format(
-                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
-                self.pipCommand
-            )
+            systemSpecificPath(self.workingDirectory +
+                               "virtualenv/bin/activate"),
+            self.pipCommand
+        )
         )
         print(emojize(":check_mark_button:"), "Installed Flask!")
 
     def installCORS(self):
         os.system('. {0} && {1} -q install -U -q flask-cors'.format(
-                systemSpecificPath(self.workingDirectory+"virtualenv/bin/activate"),
-                self.pipCommand
-            )
+            systemSpecificPath(self.workingDirectory +
+                               "virtualenv/bin/activate"),
+            self.pipCommand
+        )
         )
         print(emojize(":check_mark_button:"), "Installed CORS!")
 
@@ -235,51 +243,56 @@ class linuxUNIXRunner:
         if self.iGit:
             addGIT(self.workingDirectory)
         print(emojize(":clinking_beer_mugs:"),
-            "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
+              "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
 
 
 class windowsRunner:
     def __init__(self, location, projectName, iCors=False, iREADME=False, iGit=False) -> None:
-        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
-        self.pythonCommand , self.pipCommand = getPyPreRequisites()
+        print(emojize(":star-struck:"),
+              "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
+        self.pythonCommand, self.pipCommand = getPyPreRequisites()
         self.projectName = projectName
         self.location = location
         self.iCors = iCors
         self.iREADME = iREADME
         self.iGit = iGit
-        self.workingDirectory = createProjectDirectory(self.location, self.projectName)
+        self.workingDirectory = createProjectDirectory(
+            self.location, self.projectName)
 
     def createVirtualEnvironment(self):
         os.system('cd {0} && {1} -m venv {2}'.format(
-                systemSpecificPath(self.workingDirectory),
-                self.pythonCommand,
-                systemSpecificPath("virtualenv")
-            )
+            systemSpecificPath(self.workingDirectory),
+            self.pythonCommand,
+            systemSpecificPath("virtualenv")
+        )
         )
         print(emojize(":check_mark_button:"), "Virtual Environment Created!")
 
     def generateRequirementTXT(self):
         os.system('{0} && {1} -q freeze > {2}/requirements.txt  -q'.format(
-                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
-                self.pipCommand,
-                systemSpecificPath(self.workingDirectory)
-            )
+            systemSpecificPath(self.workingDirectory +
+                               "\\virtualenv\\Scripts\\activate"),
+            self.pipCommand,
+            systemSpecificPath(self.workingDirectory)
+        )
         )
         print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
 
     def installFlask(self):
         os.system('{0} && {1} -q install -q Flask'.format(
-                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
-                self.pipCommand
-            )
+            systemSpecificPath(self.workingDirectory +
+                               "\\virtualenv\\Scripts\\activate"),
+            self.pipCommand
+        )
         )
         print(emojize(":check_mark_button:"), "Installed Flask!")
 
     def installCORS(self):
         os.system('{0} && {1} -q install -U -q flask-cors'.format(
-                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
-                self.pipCommand
-            )
+            systemSpecificPath(self.workingDirectory +
+                               "\\virtualenv\\Scripts\\activate"),
+            self.pipCommand
+        )
         )
         print(emojize(":check_mark_button:"), "Installed CORS!")
 
@@ -301,7 +314,7 @@ class windowsRunner:
         if self.iGit:
             addGIT(self.workingDirectory)
         print(emojize(":clinking_beer_mugs:"),
-            "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
+              "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
 
 
 def main():
@@ -313,6 +326,9 @@ def main():
     parser.add_argument(
         "location", type=str, help="The Location where the Project is to be created")
 
+    parser.add_argument('--version', "-v", action='version', version='flinit 0.1.9 Beta',
+                        help="Version of flinit")  # Upgrade Version on Every Publish
+
     parser.add_argument("--git", "-gt", "-g", dest="needGIT", action="store_true",
                         help="Initialize Git for the Project. Works only if Git is installed.")
 
@@ -322,18 +338,16 @@ def main():
     parser.add_argument("--readme", "-rd", "-r", dest="needREADME",
                         action="store_true", help="Add README.md for Project.")
 
-    parser.add_argument('--version', action='version', version='flinit 0.1.9') # Upgrade Version on Every Publish
-
     parser.set_defaults(needGIT=False, needCORS=False, needREADME=False)
 
     args = parser.parse_args()
 
     if sys.platform in ["cygwin", "win32"]:
         runner = windowsRunner(
-            location=args.location, 
+            location=args.location,
             projectName=args.projectName,
-            iCors=args.needCORS, 
-            iREADME=args.needREADME, 
+            iCors=args.needCORS,
+            iREADME=args.needREADME,
             iGit=args.needGIT
         )
         runner.windowsFlowRunner()
@@ -342,7 +356,7 @@ def main():
             location=args.location,
             projectName=args.projectName,
             iCors=args.needCORS,
-            iREADME=args.needREADME, 
+            iREADME=args.needREADME,
             iGit=args.needGIT
         )
         runner.linuxUNIXFlowRunner()
