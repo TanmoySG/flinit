@@ -88,7 +88,7 @@ APPpy_CALLER = {
     "cors": "flask_cors.CORS(app)"
 }
 
-APPpy_TEMPLATE = '''\n@app.route("/") \ndef hello_world(): \n\treturn "<p>Hello, World!</p>"'''
+APPpy_TEMPLATE = '''\n\n@app.route("/") \ndef hello_world(): \n\treturn "<p>Hello, World!</p>"'''
 
 # Convert Path to Work with present working system
 def systemSpecificPath(workingPath):
@@ -98,26 +98,8 @@ def systemSpecificPath(workingPath):
         return workingPath.replace("\\", "/").replace("//", "/")
 
 def getPyPreRequisites():
-    pyPath = "python"
-    pipPath = "pip"
-
-    if shutil.which("python") != None :
-        if int(os.popen('python --version').read().split(" ")[1].replace("\n", "").split(".")[0]) >= 3 :
-            pyPath = "python"
-        else :
-            print("Python 2 or lower is not supported")
-    elif shutil.which("python3") != None :
-        if int(os.popen('python3 --version').read().split(" ")[1].replace("\n", "").split(".")[0]) >= 3 :
-            pyPath = "python3"
-        else :
-            print("Python 2 or lower is not supported")
-    elif shutil.which("py") != None :
-        if int(os.popen('py --version').read().split(" ")[1].replace("\n", "").split(".")[0]) >= 3 :
-            pyPath = "py"
-        else :
-            print("Python 2 or lower is not supported")
-    else :
-        print("Python PATH issue")
+    pyPath = sys.executable
+    pipPath = ""
 
     if shutil.which("pip") != None :
         pipPath = "pip"
@@ -339,6 +321,8 @@ def main():
 
     parser.add_argument("--readme", "-rd", "-r", dest="needREADME",
                         action="store_true", help="Add README.md for Project.")
+
+    parser.add_argument('--version', action='version', version='flinit 0.1.9') # Upgrade Version on Every Publish
 
     parser.set_defaults(needGIT=False, needCORS=False, needREADME=False)
 
