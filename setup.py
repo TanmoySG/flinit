@@ -13,7 +13,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='flinit',
-    version='0.1.7',
+    version='0.1.8',
     author='Tanmoy Sen Gupta',
     author_email='tanmoysps@gmail.com',
     url='https://github.com/TanmoySG/flinit',
@@ -33,7 +33,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),
-    keywords=['flask', 'tanmoy', 'python', 'project'],
+    keywords=['flask', 'python', 'project'],
     install_requires=getRequirements(),
     zip_safe=False
 )
