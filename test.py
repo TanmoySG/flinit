@@ -119,6 +119,7 @@ def addGIT(workingDirectory):
 
 class linuxUNIXRunner:
     def __init__(self, location, projectName, iCors=False, iREADME=False, iGit=False) -> None:
+        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
         self.pythonCommand , self.pipCommand = getPyPreRequisites()
         self.projectName = projectName
         self.location = location
@@ -128,10 +129,10 @@ class linuxUNIXRunner:
         self.workingDirectory = createProjectDirectory(self.location, self.projectName)
 
     def createVirtualEnvironment(self):
-        os.system('cd {0} && {1} -m venv {2)'.format(
+        os.system('cd {0} && {1} -m venv {2}'.format(
                 systemSpecificPath(self.workingDirectory),
                 self.pythonCommand,
-                systemSpecificPath("/virtualenv")
+                systemSpecificPath("virtualenv")
             )
         )
         print(emojize(":check_mark_button:"), "Virtual Environment Created!")
@@ -162,7 +163,6 @@ class linuxUNIXRunner:
         print(emojize(":check_mark_button:"), "Installed CORS!")
 
     def linuxUNIXFlowRunner(self):
-        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
         self.createVirtualEnvironment()
         createAPPpy(self.workingDirectory)
         self.installFlask()
@@ -185,6 +185,7 @@ class linuxUNIXRunner:
 
 class windowsRunner:
     def __init__(self, location, projectName, iCors=False, iREADME=False, iGit=False) -> None:
+        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
         self.pythonCommand , self.pipCommand = getPyPreRequisites()
         self.projectName = projectName
         self.location = location
@@ -194,41 +195,40 @@ class windowsRunner:
         self.workingDirectory = createProjectDirectory(self.location, self.projectName)
 
     def createVirtualEnvironment(self):
-        os.system('cd {0} && {1} -m venv {2)'.format(
+        os.system('cd {0} && {1} -m venv {2}'.format(
                 systemSpecificPath(self.workingDirectory),
                 self.pythonCommand,
-                systemSpecificPath("/virtualenv")
+                systemSpecificPath("virtualenv")
             )
         )
         print(emojize(":check_mark_button:"), "Virtual Environment Created!")
 
     def generateRequirementTXT(self):
-        os.system('. {0} && {1} -q freeze > {2}/requirements.txt  -q'.format(
-                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
-                self.pipCommand, 
+        os.system('{0} && {1} -q freeze > {2}/requirements.txt  -q'.format(
+                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
+                self.pipCommand,
                 systemSpecificPath(self.workingDirectory)
             )
         )
         print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
 
     def installFlask(self):
-        os.system('. {0} && {1} -q install -q Flask'.format(
-                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
+        os.system('{0} && {1} -q install -q Flask'.format(
+                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
                 self.pipCommand
             )
         )
         print(emojize(":check_mark_button:"), "Installed Flask!")
 
     def installCORS(self):
-        os.system('. {0} && {1} -q install -U -q flask-cors'.format(
-                systemSpecificPath(self.workingDirectory+"virtualenv/bin/activate"),
+        os.system('{0} && {1} -q install -U -q flask-cors'.format(
+                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
                 self.pipCommand
             )
         )
         print(emojize(":check_mark_button:"), "Installed CORS!")
 
-    def linuxUNIXFlowRunner(self):
-        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
+    def windowsFlowRunner(self):
         self.createVirtualEnvironment()
         createAPPpy(self.workingDirectory)
         self.installFlask()
@@ -249,5 +249,50 @@ class windowsRunner:
             "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
 
 
-# newOnj = linuxUNIXRunner("python", "pip", "./")
-# newOnj.printConfigs()
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("projectName", type=str,
+                        help="Name of the Project")
+
+    parser.add_argument(
+        "location", type=str, help="The Location where the Project is to be created")
+
+    parser.add_argument("--git", "-gt", "-g", dest="needGIT", action="store_true",
+                        help="Initialize Git for the Project. Works only if Git is installed.")
+
+    parser.add_argument("--cors", "-cr", "-c", dest="needCORS", action="store_true",
+                        help="Add Cross-origin resource sharing (CORS) to Flask App.")
+
+    parser.add_argument("--readme", "-rd", "-r", dest="needREADME",
+                        action="store_true", help="Add README.md for Project.")
+
+    parser.set_defaults(needGIT=False, needCORS=False, needREADME=False)
+
+    args = parser.parse_args()
+
+    if sys.platform in ["cygwin", "win32"]:
+        runner = windowsRunner(
+            location=args.location, 
+            projectName=args.projectName,
+            iCors=args.needCORS, 
+            iREADME=args.needREADME, 
+            iGit=args.needGIT
+        )
+        runner.windowsFlowRunner()
+    elif sys.platform in ["linux",  "darwin"]:
+        runner = linuxUNIXRunner(
+            location=args.location,
+            projectName=args.projectName,
+            iCors=args.needCORS,
+            iREADME=args.needREADME, 
+            iGit=args.needGIT
+        )
+        runner.linuxUNIXFlowRunner()
+
+    # runner(location=args.location, projectName=args.projectName,
+    #        iCors=args.needCORS, iREADME=args.needREADME, iGit=args.needGIT)
+
+
+if __name__ == "__main__":
+    main()
