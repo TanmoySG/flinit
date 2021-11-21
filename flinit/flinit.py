@@ -362,7 +362,3 @@ def main():
             iGit=args.needGIT
         )
         runner.linuxUNIXFlowRunner()
-
-
-if __name__ == "__main__":
-    main()
