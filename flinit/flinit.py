@@ -90,12 +90,57 @@ APPpy_CALLER = {
 
 APPpy_TEMPLATE = '''\n@app.route("/") \ndef hello_world(): \n\treturn "<p>Hello, World!</p>"'''
 
-
+# Convert Path to Work with present working system
 def systemSpecificPath(workingPath):
     if sys.platform in ["cygwin", "win32"]:
         return workingPath.replace("/", "\\")
     elif sys.platform in ["linux",  "darwin"]:
         return workingPath.replace("\\", "/").replace("//", "/")
+
+def getPyPreRequisites():
+    pyPath = "python"
+    pipPath = "pip"
+
+    if shutil.which("python") != None :
+        if int(os.popen('python --version').read().split(" ")[1].replace("\n", "").split(".")[0]) >= 3 :
+            pyPath = "python"
+        else :
+            print("Python 2 or lower is not supported")
+    elif shutil.which("python3") != None :
+        if int(os.popen('python3 --version').read().split(" ")[1].replace("\n", "").split(".")[0]) >= 3 :
+            pyPath = "python3"
+        else :
+            print("Python 2 or lower is not supported")
+    elif shutil.which("py") != None :
+        if int(os.popen('py --version').read().split(" ")[1].replace("\n", "").split(".")[0]) >= 3 :
+            pyPath = "py"
+        else :
+            print("Python 2 or lower is not supported")
+    else :
+        print("Python PATH issue")
+
+    if shutil.which("pip") != None :
+        pipPath = "pip"
+    elif os.popen("python -m pip --version").read() !=None:
+        pipPath = pyPath+" -m pip"
+    else:
+        os.popen(pyPath+" -m ensurepip --upgrade")
+        if shutil.which("pip") != None :
+            pipPath = "pip"
+        elif os.popen("python -m pip --version").read() !=None:
+            pipPath = pyPath+" -m pip"
+
+    return pyPath, pipPath
+
+
+def createProjectDirectory(workingDirectory, projectName):
+    destination = systemSpecificPath(workingDirectory+"/"+projectName+"/")
+    if not os.path.isdir(destination):
+        os.system("mkdir {0}".format(destination))
+        print(emojize(":check_mark_button:"), "Working Directory Created!")
+    else:
+        print(emojize(":check_mark_button:"), "Working Directory Exists!")
+    return destination
 
 
 def createAPPpy(workingDirectory):
@@ -116,66 +161,6 @@ def addModuleCallerToAPPpy(workingDirectory, caller):
 def writeTEMPLATEtoAPPpy(workingDirectory):
     with open(workingDirectory+"/app.py", "a+") as app:
         app.write(APPpy_TEMPLATE)
-
-
-def generateRequirementTXT(workingDirectory):
-    if sys.platform in ["cygwin", "win32"]:
-        os.system('{0} && pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
-            workingDirectory+"\\virtualenv\\Scripts\\activate"), systemSpecificPath(workingDirectory)))
-    elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && pip -q freeze > {1}/requirements.txt  -q'.format(systemSpecificPath(
-            workingDirectory+"virtualenv/bin/activate"), systemSpecificPath(workingDirectory)))
-    print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
-
-
-def installFlask(workingDirectory):
-    if sys.platform in ["cygwin", "win32"]:
-        os.system('{0} && pip -q install -q Flask'.format(systemSpecificPath(
-            workingDirectory+"\\virtualenv\\Scripts\\activate")))
-    elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && pip -q install -q Flask'.format(
-            systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
-    print(emojize(":check_mark_button:"), "Installed Flask!")
-
-
-def installCORS(workingDirectory):
-    if sys.platform in ["cygwin", "win32"]:
-        os.system('{0} && pip -q install -U -q flask-cors'.format(systemSpecificPath(
-            workingDirectory+"\\virtualenv\\Scripts\\activate")))
-    elif sys.platform in ["linux",  "darwin"]:
-        os.system('. {0} && pip -q install -U -q flask-cors'.format(
-            systemSpecificPath(workingDirectory+"virtualenv/bin/activate")))
-    print(emojize(":check_mark_button:"), "Installed CORS!")
-
-
-def createProjectDirectory(workingDirectory, projectName):
-    destination = systemSpecificPath(workingDirectory+"/"+projectName+"/")
-    if not os.path.isdir(destination):
-        os.system("mkdir {0}".format(destination))
-        print(emojize(":check_mark_button:"), "Working Directory Created!")
-    else:
-        print(emojize(":check_mark_button:"), "Working Directory Exists!")
-    return destination
-
-
-def createVirtualEnvironment(workingDirectory):
-    if sys.platform != "aix":
-        try:
-            os.system("python -m venv " +
-                      systemSpecificPath(workingDirectory+"virtualenv"))
-            print(emojize(":check_mark_button:"),
-                  "Virtual Environment Created!")
-        except subprocess.CalledProcessError as e:
-            print(
-                "There was an error creating virtual environment. Check the error in errors.txt")
-            with open(workingDirectory+"/error.txt", "w+") as err:
-                err.write(e)
-            print(emojize(":cross_mark:"), "Flinit Initialize Project Failed")
-            sys.exit()
-    else:
-        print(emojize(":cross_mark:"),
-              "System not supported. Flinit Initialize Project Failed")
-        sys.exit()
 
 
 def createREADME(location, projectName):
@@ -205,28 +190,136 @@ def addGIT(workingDirectory):
               "Git not Installed. Skipped setting up Git.")
 
 
-def runner(location, projectName, iCors=False, iREADME=False, iGit=False):
-    print(emojize(":star-struck:"),
-          "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
-    workingDirectory = createProjectDirectory(location, projectName)
-    createVirtualEnvironment(workingDirectory)
-    createAPPpy(workingDirectory)
-    installFlask(workingDirectory)
-    importModuleToAPPpy(workingDirectory, "flask")
-    if iCors:
-        installCORS(workingDirectory)
-        importModuleToAPPpy(workingDirectory, "flask_cors")
-    addModuleCallerToAPPpy(workingDirectory, APPpy_CALLER["flask"])
-    if iCors:
-        addModuleCallerToAPPpy(workingDirectory, APPpy_CALLER["cors"])
-    writeTEMPLATEtoAPPpy(workingDirectory)
-    generateRequirementTXT(workingDirectory)
-    if iREADME:
-        createREADME(workingDirectory, projectName)
-    if iGit:
-        addGIT(workingDirectory)
-    print(emojize(":clinking_beer_mugs:"),
-          "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
+class linuxUNIXRunner:
+    def __init__(self, location, projectName, iCors=False, iREADME=False, iGit=False) -> None:
+        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
+        self.pythonCommand , self.pipCommand = getPyPreRequisites()
+        self.projectName = projectName
+        self.location = location
+        self.iCors = iCors
+        self.iREADME = iREADME
+        self.iGit = iGit
+        self.workingDirectory = createProjectDirectory(self.location, self.projectName)
+
+    def createVirtualEnvironment(self):
+        os.system('cd {0} && {1} -m venv {2}'.format(
+                systemSpecificPath(self.workingDirectory),
+                self.pythonCommand,
+                systemSpecificPath("virtualenv")
+            )
+        )
+        print(emojize(":check_mark_button:"), "Virtual Environment Created!")
+
+    def generateRequirementTXT(self):
+        os.system('. {0} && {1} -q freeze > {2}/requirements.txt  -q'.format(
+                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
+                self.pipCommand, 
+                systemSpecificPath(self.workingDirectory)
+            )
+        )
+        print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
+
+    def installFlask(self):
+        os.system('. {0} && {1} -q install -q Flask'.format(
+                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
+                self.pipCommand
+            )
+        )
+        print(emojize(":check_mark_button:"), "Installed Flask!")
+
+    def installCORS(self):
+        os.system('. {0} && {1} -q install -U -q flask-cors'.format(
+                systemSpecificPath(self.workingDirectory+"virtualenv/bin/activate"),
+                self.pipCommand
+            )
+        )
+        print(emojize(":check_mark_button:"), "Installed CORS!")
+
+    def linuxUNIXFlowRunner(self):
+        self.createVirtualEnvironment()
+        createAPPpy(self.workingDirectory)
+        self.installFlask()
+        importModuleToAPPpy(self.workingDirectory, "flask")
+        if self.iCors:
+            self.installCORS()
+            importModuleToAPPpy(self.workingDirectory, "flask_cors")
+        addModuleCallerToAPPpy(self.workingDirectory, APPpy_CALLER["flask"])
+        if self.iCors:
+            addModuleCallerToAPPpy(self.workingDirectory, APPpy_CALLER["cors"])
+        writeTEMPLATEtoAPPpy(self.workingDirectory)
+        self.generateRequirementTXT()
+        if self.iREADME:
+            createREADME(self.workingDirectory, self.projectName)
+        if self.iGit:
+            addGIT(self.workingDirectory)
+        print(emojize(":clinking_beer_mugs:"),
+            "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
+
+
+class windowsRunner:
+    def __init__(self, location, projectName, iCors=False, iREADME=False, iGit=False) -> None:
+        print(emojize(":star-struck:"), "\033[93mWelcome to Flinit @ 0.1-beta\033[0m")
+        self.pythonCommand , self.pipCommand = getPyPreRequisites()
+        self.projectName = projectName
+        self.location = location
+        self.iCors = iCors
+        self.iREADME = iREADME
+        self.iGit = iGit
+        self.workingDirectory = createProjectDirectory(self.location, self.projectName)
+
+    def createVirtualEnvironment(self):
+        os.system('cd {0} && {1} -m venv {2}'.format(
+                systemSpecificPath(self.workingDirectory),
+                self.pythonCommand,
+                systemSpecificPath("virtualenv")
+            )
+        )
+        print(emojize(":check_mark_button:"), "Virtual Environment Created!")
+
+    def generateRequirementTXT(self):
+        os.system('{0} && {1} -q freeze > {2}/requirements.txt  -q'.format(
+                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
+                self.pipCommand,
+                systemSpecificPath(self.workingDirectory)
+            )
+        )
+        print(emojize(":check_mark_button:"), "Requirement.txt Generated!")
+
+    def installFlask(self):
+        os.system('{0} && {1} -q install -q Flask'.format(
+                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
+                self.pipCommand
+            )
+        )
+        print(emojize(":check_mark_button:"), "Installed Flask!")
+
+    def installCORS(self):
+        os.system('{0} && {1} -q install -U -q flask-cors'.format(
+                systemSpecificPath(self.workingDirectory+"\\virtualenv\\Scripts\\activate"),
+                self.pipCommand
+            )
+        )
+        print(emojize(":check_mark_button:"), "Installed CORS!")
+
+    def windowsFlowRunner(self):
+        self.createVirtualEnvironment()
+        createAPPpy(self.workingDirectory)
+        self.installFlask()
+        importModuleToAPPpy(self.workingDirectory, "flask")
+        if self.iCors:
+            self.installCORS()
+            importModuleToAPPpy(self.workingDirectory, "flask_cors")
+        addModuleCallerToAPPpy(self.workingDirectory, APPpy_CALLER["flask"])
+        if self.iCors:
+            addModuleCallerToAPPpy(self.workingDirectory, APPpy_CALLER["cors"])
+        writeTEMPLATEtoAPPpy(self.workingDirectory)
+        self.generateRequirementTXT()
+        if self.iREADME:
+            createREADME(self.workingDirectory, self.projectName)
+        if self.iGit:
+            addGIT(self.workingDirectory)
+        print(emojize(":clinking_beer_mugs:"),
+            "\033[93m\033[1mflinit Complete!\033[0m\033[0m")
 
 
 def main():
@@ -251,5 +344,25 @@ def main():
 
     args = parser.parse_args()
 
-    runner(location=args.location, projectName=args.projectName,
-           iCors=args.needCORS, iREADME=args.needREADME, iGit=args.needGIT)
+    if sys.platform in ["cygwin", "win32"]:
+        runner = windowsRunner(
+            location=args.location, 
+            projectName=args.projectName,
+            iCors=args.needCORS, 
+            iREADME=args.needREADME, 
+            iGit=args.needGIT
+        )
+        runner.windowsFlowRunner()
+    elif sys.platform in ["linux",  "darwin"]:
+        runner = linuxUNIXRunner(
+            location=args.location,
+            projectName=args.projectName,
+            iCors=args.needCORS,
+            iREADME=args.needREADME, 
+            iGit=args.needGIT
+        )
+        runner.linuxUNIXFlowRunner()
+
+
+if __name__ == "__main__":
+    main()
