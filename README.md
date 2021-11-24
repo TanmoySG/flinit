@@ -71,6 +71,7 @@ flinit [projectName] [location] --git --readme --cors
 !["Flinit In Action"](./examples/file-structure.png)
 
 
+[//]: Plan for v0.2.1 Release - Fix Gitignore Issue
 
 [//]: https://stackabuse.com/executing-shell-commands-with-python/
 
