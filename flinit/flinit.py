@@ -257,7 +257,7 @@ def main():
     parser.add_argument(
         "location", type=str, help="The Location where the Project is to be created")
 
-    parser.add_argument('--version', "-v", action='version', version='flinit 0.1.10 Beta',
+    parser.add_argument('--version', "-v", action='version', version='flinit 0.2.1 Beta',
                         help="Version of flinit")  # Upgrade Version on Every Publish
 
     parser.add_argument("--git", "-gt", "-g", dest="needGIT", action="store_true",
