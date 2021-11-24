@@ -6,82 +6,7 @@ from pathlib import Path
 import shutil
 from emoji import emojize
 
-
-gitIGNOREtemplate = '''
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-*.manifest
-*.spec
-pip-log.txt
-pip-delete-this-directory.txt
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-*.mo
-*.pot
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-instance/
-.webassets-cache
-.scrapy
-docs/_build/
-target/
-.ipynb_checkpoints
-profile_default/
-ipython_config.py
-.python-version
-__pypackages__/
-celerybeat-schedule
-celerybeat.pid
-*.sage.py
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-.spyderproject
-.spyproject
-.ropeproject
-/site
-.mypy_cache/
-.dmypy.json
-dmypy.json
-.pyre/
-'''
+gitIGNOREtemplateURL = "https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore"
 
 APPpy_CALLER = {
     "flask": "app = flask.Flask(__name__)",
@@ -156,20 +81,26 @@ def createREADME(location, projectName):
 
 
 def generateGITignore(workingDirectory):
+    os.system("cd {0} && curl -LJO -s {1}".format(
+            systemSpecificPath(workingDirectory),
+            gitIGNOREtemplateURL
+        )
+    )
     Path(workingDirectory+".gitignore").touch()
-    with open(workingDirectory+".gitignore", "a+") as gitignore:
-        gitignore.write(gitIGNOREtemplate)
-    print(emojize(":check_mark_button:"), ".gitignore Generated!")
+    shutil.copyfile("{0}/Python.gitignore".format(workingDirectory), "{0}/.gitignore".format(workingDirectory))
+    with open("{0}/.gitignore".format(workingDirectory), "a") as dotGITIGNORE:
+        dotGITIGNORE.write("\n# Virtual Environment\nvirtualenv/")
+    os.remove("{0}/Python.gitignore".format(workingDirectory))
 
 
 def addGIT(workingDirectory):
     if shutil.which("git") != None:
         generateGITignore(workingDirectory)
-        os.system("cd {0} && git init -q && git add . && git commit -q -m 'Initial'".format(
-            systemSpecificPath(workingDirectory)))
+        os.system("cd {0} && git init -q".format(systemSpecificPath(workingDirectory)))
+        # os.system("cd {0} && git add . ".format(systemSpecificPath(workingDirectory)))
+        # os.system("cd {0} && git commit -q -m 'Initial Commit'".format(systemSpecificPath(workingDirectory)))
+        print(emojize(":check_mark_button:"), "Git Initialized.")
         print(emojize(":check_mark_button:"), "Git Setup Complete.")
-        print(emojize(":check_mark_button:"),
-              "Code Initialized and Committed.")
     else:
         print(emojize(":cross_mark:"),
               "Git not Installed. Skipped setting up Git.")
@@ -326,7 +257,7 @@ def main():
     parser.add_argument(
         "location", type=str, help="The Location where the Project is to be created")
 
-    parser.add_argument('--version', "-v", action='version', version='flinit 0.1.9 Beta',
+    parser.add_argument('--version', "-v", action='version', version='flinit 0.1.10 Beta',
                         help="Version of flinit")  # Upgrade Version on Every Publish
 
     parser.add_argument("--git", "-gt", "-g", dest="needGIT", action="store_true",
