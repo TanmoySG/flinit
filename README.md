@@ -1,4 +1,4 @@
-# flinit <kbd>0.1-beta</kbd>
+# flinit <kbd>0.2-beta</kbd>
 
 Flinit ( **fl**ask **init** ) is a  Python Command-Line Tool to Initialize a Python-Flask Project with Boilerplate Code and other required tools.
 
@@ -71,7 +71,6 @@ flinit [projectName] [location] --git --readme --cors
 !["Flinit In Action"](./examples/file-structure.png)
 
 
-[//]: Plan for v0.2.1 Release - Fix Gitignore Issue
 
 [//]: https://stackabuse.com/executing-shell-commands-with-python/
 
