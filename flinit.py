@@ -96,11 +96,11 @@ def generateGITignore(workingDirectory):
 def addGIT(workingDirectory):
     if shutil.which("git") != None:
         generateGITignore(workingDirectory)
-        os.system("cd {0} && git init -q && git add . && git commit -q -m 'Initial'".format(
-            systemSpecificPath(workingDirectory)))
+        os.system("cd {0} && git init -q".format(systemSpecificPath(workingDirectory)))
+        # os.system("cd {0} && git add . ".format(systemSpecificPath(workingDirectory)))
+        # os.system("cd {0} && git commit -q -m 'Initial Commit'".format(systemSpecificPath(workingDirectory)))
+        print(emojize(":check_mark_button:"), "Git Initialized.")
         print(emojize(":check_mark_button:"), "Git Setup Complete.")
-        print(emojize(":check_mark_button:"),
-              "Code Initialized and Committed.")
     else:
         print(emojize(":cross_mark:"),
               "Git not Installed. Skipped setting up Git.")
