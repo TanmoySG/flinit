@@ -1,6 +1,16 @@
 # CHANGELOG
 
-## **v0.1.9** <kbd>Latest</kbd>
+
+## **v0.2.1** <kbd>Latest</kbd>
+
+- Minor Release v0.2.1 
+- Fixes and Enhancements 
+
+## **v0.1.10** 
+
+- Optimized gitignore creation.
+
+## **v0.1.9** 
 
 - Fixed Bugs - specific to flinit on macOS
 - Added Support for using multiple variations of PIP in path. If pip is not added to the path it uses <kbd>python3 -m pip install</kbd>
