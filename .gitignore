@@ -136,3 +136,5 @@ dmypy.json
 /testExamples
 ./test.py
 /testfiles
+test.py
+/test

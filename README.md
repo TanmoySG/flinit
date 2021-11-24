@@ -1,4 +1,4 @@
-# flinit <kbd>0.1-beta</kbd>
+# flinit <kbd>0.2-beta</kbd>
 
 Flinit ( **fl**ask **init** ) is a  Python Command-Line Tool to Initialize a Python-Flask Project with Boilerplate Code and other required tools.
 
