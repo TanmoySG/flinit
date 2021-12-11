@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import subprocess
 from pathlib import Path
 import shutil
 from emoji import emojize
@@ -34,12 +33,12 @@ def getPyPreRequisites():
     elif os.popen("python -m pip --version").read() != None:
         pipPath = pyPath+" -m pip"
     else:
-        os.popen(pyPath+" -m ensurepip --upgrade")
-        if shutil.which("pip") != None:
-            pipPath = "pip"
-        elif os.popen("python -m pip --version").read() != None:
-            pipPath = pyPath+" -m pip"
-
+        # os.popen(pyPath+" -m ensurepip --upgrade")
+        # if shutil.which("pip") != None:
+        #     pipPath = "pip"
+        # elif os.popen("python -m pip --version").read() != None:
+        #     pipPath = pyPath+" -m pip"
+        sys.exit("Pip Issue.")
     return pyPath, pipPath
 
 
@@ -120,11 +119,11 @@ class linuxUNIXRunner:
             self.location, self.projectName)
 
     def createVirtualEnvironment(self):
-        os.system('cd {0} && {1} -m venv {2}'.format(
-            systemSpecificPath(self.workingDirectory),
-            self.pythonCommand,
-            systemSpecificPath("virtualenv")
-        )
+        os.system('{0} -q install -q virtualenv'.format(self.pipCommand))
+        os.system('cd {0} && virtualenv {1} -q'.format(
+                systemSpecificPath(self.workingDirectory),
+                systemSpecificPath("virtualenv")
+            )
         )
         print(emojize(":check_mark_button:"), "Virtual Environment Created!")
 
@@ -140,10 +139,9 @@ class linuxUNIXRunner:
 
     def installFlask(self):
         os.system('. {0} && {1} -q install -q Flask'.format(
-            systemSpecificPath(self.workingDirectory +
-                               "virtualenv/bin/activate"),
-            self.pipCommand
-        )
+                systemSpecificPath(self.workingDirectory +"virtualenv/bin/activate"),
+                self.pipCommand
+            )
         )
         print(emojize(":check_mark_button:"), "Installed Flask!")
 
