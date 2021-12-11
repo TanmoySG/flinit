@@ -33,12 +33,11 @@ def getPyPreRequisites():
     elif os.popen("python -m pip --version").read() != None:
         pipPath = pyPath+" -m pip"
     else:
-        # os.popen(pyPath+" -m ensurepip --upgrade")
-        # if shutil.which("pip") != None:
-        #     pipPath = "pip"
-        # elif os.popen("python -m pip --version").read() != None:
-        #     pipPath = pyPath+" -m pip"
-        sys.exit("Pip Issue.")
+        os.popen(pyPath+" -m ensurepip --upgrade")
+        if shutil.which("pip") != None:
+            pipPath = "pip"
+        elif os.popen("python -m pip --version").read() != None:
+            pipPath = pyPath+" -m pip"
     return pyPath, pipPath
 
 
@@ -255,7 +254,7 @@ def main():
     parser.add_argument(
         "location", type=str, help="The Location where the Project is to be created")
 
-    parser.add_argument('--version', "-v", action='version', version='flinit 0.2.3 Beta',
+    parser.add_argument('--version', "-v", action='version', version='flinit 0.2.4 Beta',
                         help="Version of flinit")  # Upgrade Version on Every Publish
 
     parser.add_argument("--git", "-gt", "-g", dest="needGIT", action="store_true",
