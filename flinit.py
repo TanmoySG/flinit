@@ -38,7 +38,6 @@ def getPyPreRequisites():
             pipPath = "pip"
         elif os.popen("python -m pip --version").read() != None:
             pipPath = pyPath+" -m pip"
-        sys.exit("Pip Issue.")
     return pyPath, pipPath
 
 
