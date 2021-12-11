@@ -33,11 +33,11 @@ def getPyPreRequisites():
     elif os.popen("python -m pip --version").read() != None:
         pipPath = pyPath+" -m pip"
     else:
-        # os.popen(pyPath+" -m ensurepip --upgrade")
-        # if shutil.which("pip") != None:
-        #     pipPath = "pip"
-        # elif os.popen("python -m pip --version").read() != None:
-        #     pipPath = pyPath+" -m pip"
+        os.popen(pyPath+" -m ensurepip --upgrade")
+        if shutil.which("pip") != None:
+            pipPath = "pip"
+        elif os.popen("python -m pip --version").read() != None:
+            pipPath = pyPath+" -m pip"
         sys.exit("Pip Issue.")
     return pyPath, pipPath
 
