@@ -1,7 +1,22 @@
 # CHANGELOG
 
 
-## **v0.2.1** <kbd>Latest</kbd>
+## **v0.2.4** <kbd>Latest</kbd>
+
+- Using `virtualenv` instead of `venv` for Linux
+- Fixes and Enhancements 
+
+
+## **v0.2.3**
+
+- Fixes and Enhancements 
+
+
+## **v0.2.2**
+
+- Fixes and Enhancements 
+
+## **v0.2.1**
 
 - Minor Release v0.2.1 
 - Fixes and Enhancements 
