@@ -1,3 +1,11 @@
+# Initializing Flask Project with flinit
+
+Reduce 12 lines of Commands to set up a perfect Flask Project by using **flinit**
+
+```
+flinit projectName location [-h] [--version] [--git] [--cors] [--readme] 
+```
+
 # Initializing a Flask Project on windows - without flinit
 Creating a Project Working Directory
 ```
@@ -76,11 +84,3 @@ $ touch README.md
 ```
 
 This sets-up a end to end flask app on Linux/UNIX.
-
-# Initializing Flask Project with flinit
-
-Reduce 12 lines of Commands to set up a perfect Flask Project by using **flinit**
-
-```
-flinit projectName location [-h] [--version] [--git] [--cors] [--readme] 
-```
