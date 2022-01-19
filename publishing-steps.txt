@@ -1,0 +1,5 @@
+  137  python setup.py sdist bdist_wheel
+  138  twine upload --skip-existing dist/*
+
+Set your username to __token__
+Set your password to the token value, including the pypi- prefix
